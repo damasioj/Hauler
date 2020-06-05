@@ -6,10 +6,9 @@ public class ObstacleManager : MonoBehaviour
 {
     List<Obstacle> obstacles;
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        obstacles = GetComponents<Obstacle>().ToList();
+        obstacles = GetComponentsInChildren<Obstacle>().ToList();
     }
 
     public void ResetObstacles()

@@ -9,7 +9,6 @@ public class HaulerAcademy : MonoBehaviour
     Academy haulerAcademy;
     BaseTarget target;
     ObstacleManager obstacleManager;
-    //Goal goal;
     List<Collider> boundaries;
     List<Obstacle> obstacles;
     
@@ -22,18 +21,19 @@ public class HaulerAcademy : MonoBehaviour
     void Start()
     {
         obstacleManager = gameObject.AddComponent<ObstacleManager>();
-        target = GetComponentInChildren<BaseTarget>();
+        target = GetComponentInChildren<BaseTarget>();        
         boundaries = GetBoundaries();
         obstacles = GetObstacles();
+
+        var hauler = GetComponentInChildren<HaulerAgent>();
+        target.agent = hauler;
+        GetComponentInChildren<Goal>().agent = hauler;
     }
 
     public void EnvironmentReset()
     {
         obstacleManager.ResetObstacles();
-        
-        goal.Reset();
-        SetResourceRequirements();
-        SetAgentTarget();
+        target.ResetPosition();
     }
 
     private List<Collider> GetBoundaries()

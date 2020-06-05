@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.MLAgents;
 using UnityEngine;
 
 public class BaseTarget : MonoBehaviour
 {
+    [HideInInspector] public HaulerAgent agent;
     Rigidbody rBody;
     Vector3 originalPos;
 
@@ -25,5 +27,14 @@ public class BaseTarget : MonoBehaviour
         transform.position = new Vector3(originalPos.x, originalPos.y, originalPos.z);
         rBody.angularVelocity = Vector3.zero;
         rBody.velocity = Vector3.zero;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        // target is lost in boundary
+        if (other.CompareTag("boundary"))
+        {
+            agent.MarkTaskDone(TaskEndReason.Failed);
+        }
     }
 }

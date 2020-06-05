@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class Goal : MonoBehaviour
 {
+    [HideInInspector] public HaulerAgent agent;
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("target"))
         {
-            // completed 
+            agent.MarkTaskDone(TaskEndReason.Finished);
         }
     }
 }
