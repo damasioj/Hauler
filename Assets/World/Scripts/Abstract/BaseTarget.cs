@@ -37,4 +37,12 @@ public class BaseTarget : MonoBehaviour
             agent.MarkTaskDone(TaskEndReason.Failed);
         }
     }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("checkpoint"))
+        {
+            agent.MarkCheckpointReached(other);
+        }
+    }
 }

@@ -5,12 +5,11 @@ TagManager:
   serializedVersion: 2
   tags:
   - boundary
-  - bad_zone
   - obstacle
-  - bridge
-  - obstacle_cyl
-  - obstacle_rect
+  - target
+  - checkpoint
   - obstacle_cols
+  - bad_zone
   layers:
   - Default
   - TransparentFX

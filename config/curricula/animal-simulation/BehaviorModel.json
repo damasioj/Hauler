@@ -1,0 +1,10 @@
+{
+    "measure" : "reward",
+    "thresholds" : [0.05, 0.1],
+    "min_lesson_length" : 1000,
+    "signal_smoothing" : false,
+    "parameters" :
+    {
+        "number_food_sources" : [1.0, 2.0, 4.0]
+    }
+}
