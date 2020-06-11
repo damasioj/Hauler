@@ -3,11 +3,11 @@
 public class Obstacle : MonoBehaviour
 {
     public float maxX, minX, maxZ, minZ;
-    private Vector3 pos;
+    private float posY;
 
     private void Start()
     {
-        pos = gameObject.transform.position;
+        posY = gameObject.transform.position.y;
     }
 
     public virtual void Reset()
@@ -18,7 +18,7 @@ public class Obstacle : MonoBehaviour
             float x = Random.Range(minX, maxX);
             float z = Random.Range(minZ, maxZ);
 
-            pos = new Vector3(x, pos.y, z);
+            gameObject.transform.position = new Vector3(x, posY, z);
         }
     }
 }

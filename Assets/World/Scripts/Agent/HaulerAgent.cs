@@ -16,6 +16,7 @@ public class HaulerAgent : Agent
     GameObject agentHead;    
     Rigidbody rBody;
     int internalStepCount;
+    bool targetRaycast;
 
     // target
     float lastTargetDistance;
@@ -49,7 +50,7 @@ public class HaulerAgent : Agent
         targetBody = target.GetComponent<Rigidbody>();
         agentHead = GetComponentInChildren<SphereCollider>().gameObject;
 
-        raycastsHit = new List<bool>() { false, false, false };
+        raycastsHit = new List<bool>() { false, false, false }; // refactor this
         obstacles = new List<GameObject>() { null, null, null };
         checkPoints = new List<Collider>();
         isDoneCalled = false;
@@ -64,11 +65,6 @@ public class HaulerAgent : Agent
             internalStepCount = StepCount;
             AddReward(distance * 0.0001f);
         }
-
-        //if (StepCount % 1000 == 0)
-        //{
-        //    Debug.Log($"Reward: {GetCumulativeReward()}");
-        //}
 
         if (StepCount - internalStepCount > stepsThreshold && !isDoneCalled)
         {
@@ -130,6 +126,7 @@ public class HaulerAgent : Agent
         // Agent data
         sensor.AddObservation(transform.position); //3
         sensor.AddObservation(rBody.velocity); //3
+        sensor.AddObservation(targetRaycast);
 
         // obstacle info
         raycastsHit.ForEach(x => sensor.AddObservation(x)); // n * 1
@@ -212,7 +209,7 @@ public class HaulerAgent : Agent
             else if (reason == TaskEndReason.Finished)
             {
                 isDoneCalled = true;
-                AddReward(3f);
+                SetReward(3f);
                 Debug.Log($"Reward: {GetCumulativeReward()}");
                 EndEpisode();
             }
@@ -257,6 +254,19 @@ public class HaulerAgent : Agent
             }
         }
 
+        // check target raycast ... we want this to be separate from others
+        Vector3 downDirection = new Vector3(0, -0.3f, 1f);
+        if (Physics.Raycast(agentHead.transform.position, agentHead.transform.TransformDirection(downDirection), out RaycastHit targHit, 7f, layerMask))
+        {
+            Debug.DrawRay(agentHead.transform.position, agentHead.transform.TransformDirection(downDirection) * targHit.distance, Color.red);
+            ValidateRaycastCollision(targHit, 0);
+        }
+        else
+        {
+            Debug.DrawRay(agentHead.transform.position, agentHead.transform.TransformDirection(downDirection) * 7f, Color.white);
+            targetRaycast = false;
+        }
+        
     }
 
     private void ValidateRaycastCollision(RaycastHit hit, int index)
@@ -265,6 +275,10 @@ public class HaulerAgent : Agent
         {
             raycastsHit[index] = true;
             obstacles[index] = hit.collider.gameObject;
+        }
+        else if (hit.collider.CompareTag("target"))
+        {
+            targetRaycast = true;
         }
         else
         {
@@ -282,5 +296,11 @@ public class HaulerAgent : Agent
     private void SubtractReward(float value) // TODO : add to agent class
     {
         AddReward(value * -1);
+    }
+
+    new private void SetReward(float value)
+    {
+        SubtractReward(GetCumulativeReward());
+        AddReward(value);
     }
 }

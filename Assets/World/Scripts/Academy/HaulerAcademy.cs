@@ -8,6 +8,7 @@ public class HaulerAcademy : MonoBehaviour
 {
     Academy haulerAcademy;
     BaseTarget target;
+    Goal goal;
     ObstacleManager obstacleManager;
     List<Collider> boundaries;
     List<Obstacle> obstacles;
@@ -21,7 +22,8 @@ public class HaulerAcademy : MonoBehaviour
     void Start()
     {
         obstacleManager = gameObject.AddComponent<ObstacleManager>();
-        target = GetComponentInChildren<BaseTarget>();        
+        target = GetComponentInChildren<BaseTarget>();
+        goal = GetComponentInChildren<Goal>();
         boundaries = GetBoundaries();
         obstacles = GetObstacles();
 
@@ -34,6 +36,7 @@ public class HaulerAcademy : MonoBehaviour
     {
         obstacleManager.ResetObstacles();
         target.ResetPosition();
+        goal.Reset();
     }
 
     private List<Collider> GetBoundaries()
