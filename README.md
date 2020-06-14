@@ -12,7 +12,7 @@ The project uses Unity ML-Agents to train agents.
 
 The following are the goals of this project:
 
-- [ ] Move the object to the target location
+- [x] Move the object to the target location
 - [ ] Move objects with differing mass and dimensions (1 object / trial)
 - [ ] Move multiple objects to the goal
 
