@@ -13,6 +13,7 @@ public class ObstacleManager : MonoBehaviour
 
     public void ResetObstacles()
     {
+        obstacles.ForEach(x => x.SetActive(false));
         obstacles.ForEach(x => x.Reset());
     }
 }

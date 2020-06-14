@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class BaseTarget : MonoBehaviour
 {
+    public Vector2 X, Z;
     [HideInInspector] public HaulerAgent agent;
     Rigidbody rBody;
     Vector3 originalPos;
@@ -24,9 +25,18 @@ public class BaseTarget : MonoBehaviour
 
     public void ResetPosition()
     {
-        transform.position = new Vector3(originalPos.x, originalPos.y, originalPos.z);
+        if (X.x + X.y + Z.x + Z.y != 0)
+        {
+            // reset location
+            float x = Random.Range(X.x, X.y);
+            float z = Random.Range(Z.x, Z.y);
+
+            transform.position = new Vector3(x, originalPos.y, z);
+        }
+        
         rBody.angularVelocity = Vector3.zero;
         rBody.velocity = Vector3.zero;
+        transform.rotation = new Quaternion(0,0,0,0);
     }
 
     private void OnTriggerEnter(Collider other)

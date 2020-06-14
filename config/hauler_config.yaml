@@ -1,17 +1,17 @@
 default:
     trainer: ppo
-    batch_size: 512
+    batch_size: 256
     num_update: 10
     beta: 1e-03
     buffer_size: 20480
     train_interval: 20
     epsilon: 0.26
-    hidden_units: 128
+    hidden_units: 256
     lambd: 0.96
     learning_rate: 0.0015
     learning_rate_schedule: constant
-    max_steps: 5e6
-    memory_size: 128
+    max_steps: 30e6
+    memory_size: 32
     normalize: true
     num_epoch: 2
     num_layers: 2
@@ -29,9 +29,9 @@ default:
             # gamma: 0.99
             # encoding_size: 128
         gail:
-            strength: 0.05
+            strength: 0.035
             gamma: 0.99
-            demo_path: C:\Users\joshu\Documents\GitHub\Hauler\Assets\Demonstrations\Hauler3.demo
+            demo_path: C:\Users\joshu\Documents\GitHub\Hauler\Assets\Demonstrations\Hauler3_0.demo
             
 # SAC
 # default:

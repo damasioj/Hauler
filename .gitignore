@@ -63,4 +63,4 @@ crashlytics-build.properties
 /summaries/**
 /InitialScene
 Assets/Demonstrations
-/config/**
+config/**
