@@ -59,8 +59,10 @@ sysinfo.txt
 crashlytics-build.properties
 
 # ML Agent things
+/models
 /models/**
 /summaries/**
 /InitialScene
 Assets/Demonstrations
-config/**
+/config
+/config/**
