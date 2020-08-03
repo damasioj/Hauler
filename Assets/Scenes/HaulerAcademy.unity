@@ -468,7 +468,7 @@ PrefabInstance:
     - target: {fileID: 3126981665548178737, guid: 8cd4b13c28b22f84480cbfaeb5baf0d8,
         type: 3}
       propertyPath: DemonstrationName
-      value: Hauler4
+      value: Hauler5
       objectReference: {fileID: 0}
     - target: {fileID: 4631985492738929758, guid: 8cd4b13c28b22f84480cbfaeb5baf0d8,
         type: 3}
@@ -540,6 +540,11 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5375780099682051265, guid: 8cd4b13c28b22f84480cbfaeb5baf0d8,
+        type: 3}
+      propertyPath: m_BrainParameters.VectorObservationSize
+      value: 50
+      objectReference: {fileID: 0}
     - target: {fileID: 6308275993553581567, guid: 8cd4b13c28b22f84480cbfaeb5baf0d8,
         type: 3}
       propertyPath: m_LocalScale.x
@@ -574,6 +579,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Academy
+      objectReference: {fileID: 0}
+    - target: {fileID: 7799071924460805697, guid: 8cd4b13c28b22f84480cbfaeb5baf0d8,
+        type: 3}
+      propertyPath: DecisionPeriod
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8501248277339346834, guid: 8cd4b13c28b22f84480cbfaeb5baf0d8,
         type: 3}

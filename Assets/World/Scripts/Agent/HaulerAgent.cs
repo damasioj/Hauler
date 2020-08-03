@@ -127,7 +127,8 @@ public class HaulerAgent : Agent
         // Agent data
         sensor.AddObservation(transform.position); //3
         sensor.AddObservation(rBody.velocity); //3
-        sensor.AddObservation(targetRaycast);
+        sensor.AddObservation(transform.rotation); // 4
+        sensor.AddObservation(targetRaycast); //1
 
         // obstacle info
         raycastsHit.ForEach(x => sensor.AddObservation(x)); // n * 1
