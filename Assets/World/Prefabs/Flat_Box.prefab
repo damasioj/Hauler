@@ -1302,8 +1302,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agent: {fileID: 0}
   positionRange: 30
+  minMass: 0.5
+  maxMass: 1.5
   minScale: 3
   maxScale: 6
+  maxDrag: 20
 --- !u!1 &7009526861492085053
 GameObject:
   m_ObjectHideFlags: 0

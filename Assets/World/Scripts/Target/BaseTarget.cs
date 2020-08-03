@@ -5,7 +5,7 @@ public abstract class BaseTarget : MonoBehaviour
 {
     [HideInInspector] public HaulerAgent agent;
     public float positionRange;
-    public float minScale, maxScale;
+    public float minMass, maxMass, minScale, maxScale, maxDrag;
     public virtual TargetType Shape { get; protected set; }
     
     Rigidbody rBody;
@@ -27,7 +27,7 @@ public abstract class BaseTarget : MonoBehaviour
         }
 
         // reset scale
-        if (minScale + maxScale > 0)
+        if (minScale + maxScale != 0)
         {
             float scale = Random.Range(minScale, maxScale);
 
@@ -42,19 +42,26 @@ public abstract class BaseTarget : MonoBehaviour
         }
 
         // reset location
-        if (positionRange != 0)
-        {            
-            float x = Random.Range(-1f, 1f) * positionRange;
-            float z = Random.Range(-1f, 1f) * positionRange;
+        float x, z;
+        do
+        {
+            x = Random.Range(-1f, 1f) * positionRange;
+            z = Random.Range(-1f, 1f) * positionRange;
 
-            if (Physics.OverlapSphere(new Vector3(x, originalPos.y, z), 3f, layerMask).Length == 1)
-            {
-                Reset();
-            }
-            else
-            {
-                transform.position = new Vector3(x, originalPos.y, z);
-            }
+            transform.position = new Vector3(x, originalPos.y, z);
+        }
+        while (Physics.OverlapSphere(new Vector3(x, originalPos.y, z), 3f, layerMask).Length == 1);
+
+        // reset mass
+        if (minMass + maxMass != 0)
+        {
+            rBody.mass = Random.Range(minMass, maxMass);
+        }
+
+        // reset drag
+        if (maxDrag > 0)
+        {
+            rBody.drag = Random.Range(1f, maxDrag);
         }
         
         rBody.angularVelocity = Vector3.zero;

@@ -113,13 +113,15 @@ public class HaulerAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        // target location
+        // target data
         sensor.AddObservation(target.transform.position); //3
         sensor.AddObservation(targetBody.velocity); //3
         sensor.AddObservation(targetDimensions); //3
         sensor.AddObservation(target.transform.rotation); //3
+        sensor.AddObservation(targetBody.mass); //1
+        sensor.AddObservation(targetBody.drag); //1
 
-        // goal info
+        // goal data
         sensor.AddObservation(goal.transform.position); //3
 
         // Agent data
