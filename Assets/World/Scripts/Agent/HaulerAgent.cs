@@ -39,6 +39,14 @@ public class HaulerAgent : Agent
         new Vector3(-0.5f, 0, 0.5f)
     };
 
+    private void Awake()
+    {
+        raycastsHit = new List<bool>() { false, false, false }; // refactor this
+        obstacles = new List<GameObject>() { null, null, null };
+        checkPoints = new List<Collider>();
+        isDoneCalled = false;
+    }
+
     void Start()
     {
         previousPosition = transform.position;
@@ -48,12 +56,7 @@ public class HaulerAgent : Agent
         rBody = GetComponent<Rigidbody>();
         academy = GetComponentInParent<HaulerAcademy>();
         targetBody = target.GetComponent<Rigidbody>();
-        agentHead = GetComponentInChildren<SphereCollider>().gameObject;
-
-        raycastsHit = new List<bool>() { false, false, false }; // refactor this
-        obstacles = new List<GameObject>() { null, null, null };
-        checkPoints = new List<Collider>();
-        isDoneCalled = false;
+        agentHead = GetComponentInChildren<SphereCollider>().gameObject;        
     }
 
     void Update()
@@ -113,37 +116,39 @@ public class HaulerAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        // target data
-        sensor.AddObservation(target.transform.position); //3
-        sensor.AddObservation(targetBody.velocity); //3
-        sensor.AddObservation(targetDimensions); //3
-        sensor.AddObservation(target.transform.rotation); //3
-        sensor.AddObservation(targetBody.mass); //1
-        sensor.AddObservation(targetBody.drag); //1
-
-        // goal data
-        sensor.AddObservation(goal.transform.position); //3
-
-        // Agent data
-        sensor.AddObservation(transform.position); //3
-        sensor.AddObservation(rBody.velocity); //3
-        sensor.AddObservation(transform.rotation); // 4
-        sensor.AddObservation(targetRaycast); //1
-
-        // obstacle info
-        raycastsHit.ForEach(x => sensor.AddObservation(x)); // n * 1
-
-        for (int i = 0; i < obstacles.Count; i++)
+        if (!isDoneCalled)
         {
-            sensor.AddObservation(ObjectHelper.GetDimensions(obstacles[i])); // n * 3
+            // target data
+            sensor.AddObservation(target.transform.position); //3
+            sensor.AddObservation(targetBody.velocity); //3
+            sensor.AddObservation(targetDimensions); //3
+            sensor.AddObservation(target.transform.rotation); //3
+            sensor.AddObservation(targetBody.mass); //1
+            sensor.AddObservation(targetBody.drag); //1
 
-            if (obstacles[i] == null)
+            // goal data
+            sensor.AddObservation(goal.transform.position); //3
+
+            // Agent data
+            sensor.AddObservation(transform.position); //3
+            sensor.AddObservation(rBody.velocity); //3
+            sensor.AddObservation(transform.rotation); // 4
+            sensor.AddObservation(targetRaycast); //1
+
+            // obstacle info
+            raycastsHit.ForEach(x => sensor.AddObservation(x)); // n * 1
+            for (int i = 0; i < obstacles.Count; i++)
             {
-                sensor.AddObservation(Vector3.zero);
-                continue;
-            }            
-            
-            sensor.AddObservation(obstacles[i].transform.position); // n * 3
+                if (obstacles[i] == null)
+                {
+                    sensor.AddObservation(Vector3.zero);
+                    sensor.AddObservation(Vector3.zero);
+                    continue;
+                }
+
+                sensor.AddObservation(ObjectHelper.GetDimensions(obstacles[i])); // n * 3
+                sensor.AddObservation(obstacles[i].transform.position); // n * 3
+            }
         }
     }
 
@@ -188,7 +193,6 @@ public class HaulerAgent : Agent
             var direction = (transform.position - previousPosition).normalized;
             direction.y = 0;
 
-            //transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), 0.15F);
             transform.rotation = Quaternion.LookRotation(direction);
             previousPosition = transform.position;
         }
