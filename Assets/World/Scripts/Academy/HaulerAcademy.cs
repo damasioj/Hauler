@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Unity.MLAgents;
 using UnityEngine;
@@ -7,11 +6,11 @@ using UnityEngine;
 public class HaulerAcademy : MonoBehaviour
 {
     Academy haulerAcademy;
-    BaseTarget target;
+    HaulerAgent hauler;
+    BaseTarget activeTarget;
+    List<BaseTarget> targets;
     Goal goal;
     ObstacleManager obstacleManager;
-    List<Collider> boundaries;
-    List<Obstacle> obstacles;
     
     void Awake()
     {
@@ -22,30 +21,30 @@ public class HaulerAcademy : MonoBehaviour
     void Start()
     {
         obstacleManager = gameObject.AddComponent<ObstacleManager>();
-        target = GetComponentInChildren<BaseTarget>();
+        hauler = GetComponentInChildren<Agent>() as HaulerAgent;
+        targets = GetComponentsInChildren<BaseTarget>().ToList();
         goal = GetComponentInChildren<Goal>();
-        boundaries = GetBoundaries();
-        obstacles = GetObstacles();
 
-        var hauler = GetComponentInChildren<HaulerAgent>();
-        target.agent = hauler;
-        GetComponentInChildren<Goal>().agent = hauler;
+        targets.ForEach(t => t.agent = hauler);
+        goal.agent = hauler;
     }
 
     public void EnvironmentReset()
     {
+        SetTarget();
+        activeTarget.Reset();
+        goal.Reset(activeTarget.transform.localPosition);
         obstacleManager.ResetObstacles();
-        target.ResetPosition();
-        goal.Reset();
     }
 
-    private List<Collider> GetBoundaries()
+    public void SetTarget()
     {
-        return GetComponentsInChildren<Collider>().Where(c => c.CompareTag("boundary")).ToList();
-    }
+        int index = Random.Range(0, targets.Count);
 
-    private List<Obstacle> GetObstacles()
-    {
-        return GetComponentsInChildren<Obstacle>().ToList();
+        activeTarget = targets[index];
+        activeTarget.gameObject.SetActive(true);
+        hauler.target = activeTarget;
+        
+        targets.Except(new[] { targets[index] }).ToList().ForEach(t => t.gameObject.SetActive(false));
     }
 }

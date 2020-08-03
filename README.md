@@ -20,10 +20,11 @@ The following are the goals of this project:
 
 To run this environment, you will need:
 - Python 3.6.1 or greater
-	- mlagents version 1.0.2 
+	- mlagents version 0.16.1
 - Unity 2019.2.0f1 or greater
 
 # Current limitations / issues
+
 ## Object dimension information
 
 Ideally we would like to provide the agent with the object's dimensions, but this seems to be more complicated than initially thought. The dimensions of a box, for instance, can be defined with 8 given vectors (1 vector for each point), but if we change the target object to a ball the number of vectors can be virtually infinite. 

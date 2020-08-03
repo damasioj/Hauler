@@ -13,7 +13,7 @@ public class ObstacleManager : MonoBehaviour
 
     public void ResetObstacles()
     {
-        obstacles.ForEach(x => x.SetActive(false));
+        obstacles.ForEach(x => x.gameObject.SetActive(false)); // this is necessary to not cause obstacles to "overlap"
         obstacles.ForEach(x => x.Reset());
     }
 }

@@ -6,14 +6,14 @@ default:
     buffer_size: 20480
     train_interval: 20
     epsilon: 0.26
-    hidden_units: 256
+    hidden_units: 128
     lambd: 0.96
     learning_rate: 0.0015
     learning_rate_schedule: constant
     max_steps: 30e6
     memory_size: 32
     normalize: true
-    num_epoch: 2
+    num_epoch: 3
     num_layers: 2
     time_horizon: 1024
     sequence_length: 24
@@ -29,9 +29,9 @@ default:
             # gamma: 0.99
             # encoding_size: 128
         gail:
-            strength: 0.035
+            strength: 0.03
             gamma: 0.99
-            demo_path: C:\Users\joshu\Documents\GitHub\Hauler\Assets\Demonstrations\Hauler3_0.demo
+            demo_path: C:\Users\joshu\Documents\GitHub\Hauler\Assets\Demonstrations\Hauler4_2.demo
             
 # SAC
 # default:

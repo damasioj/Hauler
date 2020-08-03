@@ -6,7 +6,7 @@ using UnityEngine;
 public class HaulerAgent : Agent
 {
     // predef
-    public BaseTarget target;
+    [HideInInspector] public BaseTarget target;
     public Goal goal;
     public int stepsThreshold;
 
@@ -69,7 +69,7 @@ public class HaulerAgent : Agent
         if (StepCount - internalStepCount > stepsThreshold && !isDoneCalled)
         {
             isDoneCalled = true;
-            SubtractReward(0.1f);
+            SubtractReward(0.2f);
             Debug.Log($"Reward: {GetCumulativeReward()}");
             Debug.Log($"No point earned in last {stepsThreshold} steps. Restarting ...");            
             EndEpisode();
@@ -115,10 +115,9 @@ public class HaulerAgent : Agent
     {
         // target location
         sensor.AddObservation(target.transform.position); //3
-        //sensor.AddObservation(targetBody.mass); //1
-        //sensor.AddObservation(targetBody.drag); //1
         sensor.AddObservation(targetBody.velocity); //3
         sensor.AddObservation(targetDimensions); //3
+        sensor.AddObservation(target.transform.rotation); //3
 
         // goal info
         sensor.AddObservation(goal.transform.position); //3

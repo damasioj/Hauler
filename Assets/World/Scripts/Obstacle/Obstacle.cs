@@ -2,20 +2,14 @@
 
 public class Obstacle : MonoBehaviour
 {
-    public float maxX, minX, maxZ, minZ;
+    public float maxX, minX, maxZ, minZ, minScale, maxScale;
     private float posY;
     private int layerMask;
 
     private void Start()
     {
-        posY = gameObject.transform.position.y;
+        posY = transform.position.y;
         layerMask = 2;
-        //layerMask = ~layerMask;
-    }
-
-    public void SetActive(bool value)
-    {
-        gameObject.SetActive(value);
     }
     
     public virtual void Reset()
@@ -25,12 +19,23 @@ public class Obstacle : MonoBehaviour
             gameObject.SetActive(true);
         }
 
-        if (maxX + maxZ + minX + minZ != 0)
+        if (maxX + maxZ != 0 || minX + minZ != 0)
         {
-            // reset location
+            float scale = Random.Range(minScale, maxScale);
             float x = Random.Range(minX, maxX);
             float z = Random.Range(minZ, maxZ);
 
+            // set scale
+            if (transform.localScale.x == transform.localScale.z)
+            {
+                transform.localScale = new Vector3(scale, transform.localScale.y, scale);
+            }
+            else
+            {
+                transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, scale);
+            }
+
+            // set location
             if (Physics.OverlapSphere(new Vector3(x, posY, z), 4f, layerMask).Length == 1)
             {
                 Reset();

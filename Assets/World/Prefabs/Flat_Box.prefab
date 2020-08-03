@@ -837,6 +837,50 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &4818300458916779357
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8963069260819254493}
+  - component: {fileID: 6344343029651087269}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: checkpoint
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8963069260819254493
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4818300458916779357}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.0000000062282197, y: 0, z: 0}
+  m_LocalScale: {x: 1.8527625, y: 1.2450935, z: 1.8527625}
+  m_Children: []
+  m_Father: {fileID: 462227661357822206}
+  m_RootOrder: 16
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &6344343029651087269
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4818300458916779357}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &4990586720908473464
 GameObject:
   m_ObjectHideFlags: 0
@@ -1164,6 +1208,7 @@ Transform:
   - {fileID: 9110682842404043984}
   - {fileID: 6595911264109118521}
   - {fileID: 615001815601389344}
+  - {fileID: 8963069260819254493}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1255,9 +1300,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f8ea81ad93a661438ce7d047556a800, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  X: {x: -19, y: 2}
-  Z: {x: 10, y: 24}
   agent: {fileID: 0}
+  positionRange: 30
+  minScale: 3
+  maxScale: 6
 --- !u!1 &7009526861492085053
 GameObject:
   m_ObjectHideFlags: 0
