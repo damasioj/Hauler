@@ -275,11 +275,6 @@ PrefabInstance:
       propertyPath: goal
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 3944568309505467386, guid: f883dc7725f48dc41b6ad06a2d9a5cb5,
-        type: 3}
-      propertyPath: m_BrainParameters.NumStackedVectorObservations
-      value: 5
-      objectReference: {fileID: 0}
     - target: {fileID: 4354820573416190821, guid: f883dc7725f48dc41b6ad06a2d9a5cb5,
         type: 3}
       propertyPath: m_LocalPosition.x

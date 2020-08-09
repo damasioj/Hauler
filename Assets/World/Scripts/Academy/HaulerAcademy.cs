@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class HaulerAcademy : MonoBehaviour
 {
-    Academy haulerAcademy;
     HaulerAgent hauler;
     BaseTarget activeTarget;
     List<BaseTarget> targets;
@@ -14,7 +13,6 @@ public class HaulerAcademy : MonoBehaviour
     
     void Awake()
     {
-        haulerAcademy = Academy.Instance;
         Academy.Instance.OnEnvironmentReset += EnvironmentReset;
     }
 
@@ -31,10 +29,10 @@ public class HaulerAcademy : MonoBehaviour
 
     public void EnvironmentReset()
     {
-        SetTarget();
+        SetTarget();                
+        obstacleManager.ResetObstacles();
         activeTarget.Reset();
         goal.Reset(activeTarget.transform.localPosition);
-        obstacleManager.ResetObstacles();
     }
 
     public void SetTarget()

@@ -1,16 +1,9 @@
-﻿using UnityEngine;
+﻿using Unity.Barracuda;
+using UnityEngine;
 
 public class Obstacle : MonoBehaviour
 {
     public float maxX, minX, maxZ, minZ, minScale, maxScale;
-    private float posY;
-    private int layerMask;
-
-    private void Start()
-    {
-        posY = transform.position.y;
-        layerMask = 2;
-    }
     
     public virtual void Reset()
     {
@@ -22,8 +15,6 @@ public class Obstacle : MonoBehaviour
         if (maxX + maxZ != 0 || minX + minZ != 0)
         {
             float scale = Random.Range(minScale, maxScale);
-            float x = Random.Range(minX, maxX);
-            float z = Random.Range(minZ, maxZ);
 
             // set scale
             if (transform.localScale.x == transform.localScale.z)
@@ -36,14 +27,11 @@ public class Obstacle : MonoBehaviour
             }
 
             // set location
-            if (Physics.OverlapSphere(new Vector3(x, posY, z), 4f, layerMask).Length == 1)
+            do
             {
-                Reset();
-            }     
-            else
-            {
-                gameObject.transform.position = new Vector3(x, posY, z);
+                transform.position = new Vector3(Random.Range(minX, maxX), transform.position.y, Random.Range(minZ, maxZ));
             }
+            while (Physics.OverlapSphere(transform.position, 4f, 2).Length >= 1);
         }
     }
 }

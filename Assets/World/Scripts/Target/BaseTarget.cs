@@ -9,14 +9,20 @@ public abstract class BaseTarget : MonoBehaviour
     public virtual TargetType Shape { get; protected set; }
     
     Rigidbody rBody;
-    Vector3 originalPos;
-    int layerMask;
 
     void Start()
     {
-        originalPos = new Vector3(transform.position.x, transform.position.y, transform.position.z);
         rBody = GetComponentInChildren<Rigidbody>();
-        layerMask = 2;
+    }
+
+    private void Update()
+    {
+        // Sometimes a collision bug causes target to appear under the scene
+        if (transform.position.y < 0f)
+        {
+            transform.position = new Vector3(transform.position.x, 5f, transform.position.z);
+            ResetPosition();
+        }
     }
 
     public void Reset()
@@ -42,15 +48,7 @@ public abstract class BaseTarget : MonoBehaviour
         }
 
         // reset location
-        float x, z;
-        do
-        {
-            x = Random.Range(-1f, 1f) * positionRange;
-            z = Random.Range(-1f, 1f) * positionRange;
-
-            transform.position = new Vector3(x, originalPos.y, z);
-        }
-        while (Physics.OverlapSphere(new Vector3(x, originalPos.y, z), 3f, layerMask).Length == 1);
+        ResetPosition();
 
         // reset mass
         if (minMass + maxMass != 0)
@@ -67,6 +65,15 @@ public abstract class BaseTarget : MonoBehaviour
         rBody.angularVelocity = Vector3.zero;
         rBody.velocity = Vector3.zero;
         transform.rotation = new Quaternion(0,0,0,0);
+    }
+
+    private void ResetPosition()
+    {
+        do
+        {
+            transform.localPosition = new Vector3(Random.Range(-1f, 1f) * positionRange, transform.localPosition.y, Random.Range(-1f, 1f) * positionRange);
+        }
+        while (Physics.OverlapSphere(transform.position, 5f, 2).Length >= 1);
     }
 
     private void OnTriggerEnter(Collider other)

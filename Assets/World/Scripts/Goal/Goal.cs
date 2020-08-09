@@ -26,7 +26,7 @@ public class Goal : MonoBehaviour
         {
             newPos = new Vector3(Random.Range(-1f, 1f) * positionRange, transform.localPosition.y, Random.Range(-1f, 1f) * positionRange);
         }
-        while (newPos.sqrMagnitude - _targetLocation.sqrMagnitude < 5);
+        while (Vector3.Distance(newPos, _targetLocation) < 50);
 
         transform.localPosition = newPos;
         transform.localScale = new Vector3(scale, transform.localScale.y, scale);

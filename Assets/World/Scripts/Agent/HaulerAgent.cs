@@ -9,9 +9,9 @@ public class HaulerAgent : Agent
     [HideInInspector] public BaseTarget target;
     public Goal goal;
     public int stepsThreshold;
+    public float positionRange;
 
     // agent
-    Vector3 startingPosition;
     Vector3 previousPosition;
     GameObject agentHead;    
     Rigidbody rBody;
@@ -51,7 +51,6 @@ public class HaulerAgent : Agent
     {
         previousPosition = transform.position;
         lastTargetDistance = 0f;
-        startingPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z);
         
         rBody = GetComponent<Rigidbody>();
         academy = GetComponentInParent<HaulerAcademy>();
@@ -84,6 +83,26 @@ public class HaulerAgent : Agent
         ExecuteRaycasts();
     }
 
+    private void Reset()
+    {
+        SetReward(0f);
+
+        // reset position
+        do
+        {
+            transform.position = new Vector3(Random.Range(-1f, 1f) * positionRange, transform.position.y, Random.Range(-1f, 1f) * positionRange);
+        }
+        while (Physics.OverlapSphere(transform.position, 3f, 2).Length >= 1);
+
+        rBody.angularVelocity = Vector3.zero;
+        rBody.velocity = Vector3.zero;
+
+        lastTargetDistance = 0f;
+        internalStepCount = StepCount;
+        isDoneCalled = false;
+        checkPoints.Clear();
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("checkpoint"))
@@ -101,17 +120,10 @@ public class HaulerAgent : Agent
 
     public override void OnEpisodeBegin()
     {
-        SetReward(0f);
-
-        transform.position = startingPosition;
-        rBody.angularVelocity = Vector3.zero;
-        rBody.velocity = Vector3.zero;
+        Reset();
 
         academy.EnvironmentReset(); // TODO : find a way to refactor this ... agent shouldn't call academy functions
         targetDimensions = ObjectHelper.GetDimensions(target.gameObject);
-        lastTargetDistance = 0f;
-        internalStepCount = StepCount;
-        isDoneCalled = false;
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -304,6 +316,10 @@ public class HaulerAgent : Agent
         AddReward(value * -1);
     }
 
+    /// <summary>
+    /// The base SetReward doesn't actually "set reward", only adds.
+    /// </summary>
+    /// <param name="value"></param>
     new private void SetReward(float value)
     {
         SubtractReward(GetCumulativeReward());

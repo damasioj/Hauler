@@ -525,7 +525,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 46
+    VectorObservationSize: 50
     NumStackedVectorObservations: 1
     VectorActionSize: 02000000
     VectorActionDescriptions: []
@@ -555,6 +555,7 @@ MonoBehaviour:
   target: {fileID: 0}
   goal: {fileID: 0}
   stepsThreshold: 900
+  positionRange: 35
 --- !u!114 &1160995109560047994
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -567,7 +568,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DecisionPeriod: 10
+  DecisionPeriod: 5
   TakeActionsBetweenDecisions: 1
 --- !u!114 &-2935725461011492342
 MonoBehaviour:
