@@ -128,39 +128,36 @@ public class HaulerAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        if (!isDoneCalled)
+        // target data
+        sensor.AddObservation(target.transform.position); //3
+        sensor.AddObservation(targetBody.velocity); //3
+        sensor.AddObservation(targetDimensions); //3
+        sensor.AddObservation(target.transform.rotation); //3
+        sensor.AddObservation(targetBody.mass); //1
+        sensor.AddObservation(targetBody.drag); //1
+
+        // goal data
+        sensor.AddObservation(goal.transform.position); //3
+
+        // Agent data
+        sensor.AddObservation(transform.position); //3
+        sensor.AddObservation(rBody.velocity); //3
+        sensor.AddObservation(transform.rotation); // 4
+        sensor.AddObservation(targetRaycast); //1
+
+        // obstacle info
+        raycastsHit.ForEach(x => sensor.AddObservation(x)); // n * 1
+        for (int i = 0; i < obstacles.Count; i++)
         {
-            // target data
-            sensor.AddObservation(target.transform.position); //3
-            sensor.AddObservation(targetBody.velocity); //3
-            sensor.AddObservation(targetDimensions); //3
-            sensor.AddObservation(target.transform.rotation); //3
-            sensor.AddObservation(targetBody.mass); //1
-            sensor.AddObservation(targetBody.drag); //1
-
-            // goal data
-            sensor.AddObservation(goal.transform.position); //3
-
-            // Agent data
-            sensor.AddObservation(transform.position); //3
-            sensor.AddObservation(rBody.velocity); //3
-            sensor.AddObservation(transform.rotation); // 4
-            sensor.AddObservation(targetRaycast); //1
-
-            // obstacle info
-            raycastsHit.ForEach(x => sensor.AddObservation(x)); // n * 1
-            for (int i = 0; i < obstacles.Count; i++)
+            if (obstacles[i] == null)
             {
-                if (obstacles[i] == null)
-                {
-                    sensor.AddObservation(Vector3.zero);
-                    sensor.AddObservation(Vector3.zero);
-                    continue;
-                }
-
-                sensor.AddObservation(ObjectHelper.GetDimensions(obstacles[i])); // n * 3
-                sensor.AddObservation(obstacles[i].transform.position); // n * 3
+                sensor.AddObservation(Vector3.zero);
+                sensor.AddObservation(Vector3.zero);
+                continue;
             }
+
+            sensor.AddObservation(ObjectHelper.GetDimensions(obstacles[i])); // n * 3
+            sensor.AddObservation(obstacles[i].transform.position); // n * 3
         }
     }
 

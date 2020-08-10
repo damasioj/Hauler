@@ -73,7 +73,7 @@ public abstract class BaseTarget : MonoBehaviour
         {
             transform.localPosition = new Vector3(Random.Range(-1f, 1f) * positionRange, transform.localPosition.y, Random.Range(-1f, 1f) * positionRange);
         }
-        while (Physics.OverlapSphere(transform.position, 5f, 2).Length >= 1);
+        while (Physics.OverlapSphere(transform.position, 2f, 2).Length >= 1);
     }
 
     private void OnTriggerEnter(Collider other)

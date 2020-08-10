@@ -31,7 +31,7 @@ public class Obstacle : MonoBehaviour
             {
                 transform.position = new Vector3(Random.Range(minX, maxX), transform.position.y, Random.Range(minZ, maxZ));
             }
-            while (Physics.OverlapSphere(transform.position, 4f, 2).Length >= 1);
+            while (Physics.OverlapSphere(transform.position, 2f, 2).Length >= 1);
         }
     }
 }
