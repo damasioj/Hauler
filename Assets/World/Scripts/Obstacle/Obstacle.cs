@@ -29,9 +29,9 @@ public class Obstacle : MonoBehaviour
             // set location
             do
             {
-                transform.position = new Vector3(Random.Range(minX, maxX), transform.position.y, Random.Range(minZ, maxZ));
+                transform.localPosition = new Vector3(Random.Range(minX, maxX), transform.localPosition.y, Random.Range(minZ, maxZ));
             }
-            while (Physics.OverlapSphere(transform.position, 2f, 2).Length >= 1);
+            while (Physics.OverlapSphere(transform.localPosition, 2f, 2).Length >= 1);
         }
     }
 }

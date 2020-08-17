@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.UIElements;
 
 public abstract class BaseTarget : MonoBehaviour
 {
@@ -10,7 +9,7 @@ public abstract class BaseTarget : MonoBehaviour
     
     Rigidbody rBody;
 
-    void Start()
+    void Awake()
     {
         rBody = GetComponentInChildren<Rigidbody>();
     }

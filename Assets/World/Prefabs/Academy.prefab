@@ -270,10 +270,25 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4923399977637004289}
     m_Modifications:
+    - target: {fileID: 1160995109560047994, guid: f883dc7725f48dc41b6ad06a2d9a5cb5,
+        type: 3}
+      propertyPath: DecisionPeriod
+      value: 12
+      objectReference: {fileID: 0}
     - target: {fileID: 2225003602625255484, guid: f883dc7725f48dc41b6ad06a2d9a5cb5,
         type: 3}
       propertyPath: goal
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2225003602625255484, guid: f883dc7725f48dc41b6ad06a2d9a5cb5,
+        type: 3}
+      propertyPath: raycastDistance
+      value: 75
+      objectReference: {fileID: 0}
+    - target: {fileID: 3944568309505467386, guid: f883dc7725f48dc41b6ad06a2d9a5cb5,
+        type: 3}
+      propertyPath: m_BrainParameters.VectorObservationSize
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 4354820573416190821, guid: f883dc7725f48dc41b6ad06a2d9a5cb5,
         type: 3}

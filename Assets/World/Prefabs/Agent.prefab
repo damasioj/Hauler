@@ -554,8 +554,9 @@ MonoBehaviour:
   MaxStep: 0
   target: {fileID: 0}
   goal: {fileID: 0}
-  stepsThreshold: 900
+  stepsThreshold: 1500
   positionRange: 35
+  raycastDistance: 0
 --- !u!114 &1160995109560047994
 MonoBehaviour:
   m_ObjectHideFlags: 0

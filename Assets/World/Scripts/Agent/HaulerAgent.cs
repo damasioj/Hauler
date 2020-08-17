@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
@@ -10,10 +11,12 @@ public class HaulerAgent : Agent
     public Goal goal;
     public int stepsThreshold;
     public float positionRange;
+    public float raycastDistance;
 
     // agent
+    public event EventHandler EpisodeReset;
     Vector3 previousPosition;
-    GameObject agentHead;    
+    GameObject agentHead;
     Rigidbody rBody;
     int internalStepCount;
     bool targetRaycast;
@@ -24,7 +27,6 @@ public class HaulerAgent : Agent
     Vector3 targetDimensions;
 
     // env
-    HaulerAcademy academy;
     List<bool> raycastsHit;
     List<GameObject> obstacles;
     List<Collider> checkPoints;
@@ -41,31 +43,31 @@ public class HaulerAgent : Agent
 
     private void Awake()
     {
-        raycastsHit = new List<bool>() { false, false, false }; // refactor this
-        obstacles = new List<GameObject>() { null, null, null };
+        InitializeRaycasts(3);
         checkPoints = new List<Collider>();
-        isDoneCalled = false;
     }
 
     void Start()
     {
-        previousPosition = transform.position;
-        lastTargetDistance = 0f;
-        
         rBody = GetComponent<Rigidbody>();
-        academy = GetComponentInParent<HaulerAcademy>();
-        targetBody = target.GetComponent<Rigidbody>();
-        agentHead = GetComponentInChildren<SphereCollider>().gameObject;        
+        agentHead = GetComponentInChildren<SphereCollider>().gameObject;
+
+        //OnEpisodeBegin();
     }
 
-    void Update()
+    void FixedUpdate()
     {
-        float distance = ObjectHelper.EvaluateProximity(ref lastTargetDistance, target.gameObject, goal.gameObject);
+        ExecuteRaycasts();
 
-        if (distance > 0)
+        if (checkPoints.Count > 0) // only consider distance after hitting the box to avoid false rewards
         {
-            internalStepCount = StepCount;
-            AddReward(distance * 0.0001f);
+            float distance = ObjectHelper.EvaluateProximity(ref lastTargetDistance, target.gameObject, goal.gameObject);
+            if (distance > 0)
+            {
+                internalStepCount = StepCount;
+                AddReward(distance * 0.0001f);
+                Debug.Log($"Reward: {GetCumulativeReward()}");
+            }
         }
 
         if (StepCount - internalStepCount > stepsThreshold && !isDoneCalled)
@@ -73,14 +75,9 @@ public class HaulerAgent : Agent
             isDoneCalled = true;
             SubtractReward(0.2f);
             Debug.Log($"Reward: {GetCumulativeReward()}");
-            Debug.Log($"No point earned in last {stepsThreshold} steps. Restarting ...");            
+            Debug.Log($"No point earned in last {stepsThreshold} steps. Restarting ...");
             EndEpisode();
         }
-    }
-
-    void FixedUpdate()
-    {
-        ExecuteRaycasts();
     }
 
     private void Reset()
@@ -90,7 +87,7 @@ public class HaulerAgent : Agent
         // reset position
         do
         {
-            transform.position = new Vector3(Random.Range(-1f, 1f) * positionRange, transform.position.y, Random.Range(-1f, 1f) * positionRange);
+            transform.position = new Vector3(UnityEngine.Random.Range(-1f, 1f) * positionRange, transform.position.y, UnityEngine.Random.Range(-1f, 1f) * positionRange);
         }
         while (Physics.OverlapSphere(transform.position, 3f, 2).Length >= 1);
 
@@ -101,6 +98,24 @@ public class HaulerAgent : Agent
         internalStepCount = StepCount;
         isDoneCalled = false;
         checkPoints.Clear();
+    }
+
+    private void UpdateTargetData()
+    {
+        targetDimensions = ObjectHelper.GetDimensions(target.gameObject);
+        targetBody = target.GetComponent<Rigidbody>();
+    }
+
+    private void InitializeRaycasts(int size)
+    {
+        raycastsHit = new List<bool>();
+        obstacles = new List<GameObject>();
+        
+        for (int i = 0; i < size; i++)
+        {
+            raycastsHit.Add(false);
+            obstacles.Add(null);
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -121,9 +136,8 @@ public class HaulerAgent : Agent
     public override void OnEpisodeBegin()
     {
         Reset();
-
-        academy.EnvironmentReset(); // TODO : find a way to refactor this ... agent shouldn't call academy functions
-        targetDimensions = ObjectHelper.GetDimensions(target.gameObject);
+        OnEpisodeReset();
+        UpdateTargetData();
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -132,7 +146,7 @@ public class HaulerAgent : Agent
         sensor.AddObservation(target.transform.position); //3
         sensor.AddObservation(targetBody.velocity); //3
         sensor.AddObservation(targetDimensions); //3
-        sensor.AddObservation(target.transform.rotation); //3
+        sensor.AddObservation(target.transform.rotation); //4
         sensor.AddObservation(targetBody.mass); //1
         sensor.AddObservation(targetBody.drag); //1
 
@@ -208,6 +222,14 @@ public class HaulerAgent : Agent
     }
 
     /// <summary>
+    /// Calls all associated academies to reset the environment.
+    /// </summary>
+    public void OnEpisodeReset()
+    {
+        EpisodeReset?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
     /// Used by exetrnal sources to mark that the agent failed or finished the task.
     /// </summary>
     public void MarkTaskDone(TaskEndReason reason)
@@ -254,7 +276,7 @@ public class HaulerAgent : Agent
 
         for (int i = 0; i < directions.Length; i++)
         {
-            if (Physics.Raycast(agentHead.transform.position, agentHead.transform.TransformDirection(directions[i]), out RaycastHit hit, 20f, layerMask))
+            if (Physics.Raycast(agentHead.transform.position, agentHead.transform.TransformDirection(directions[i]), out RaycastHit hit, raycastDistance, layerMask))
             {
                 Debug.DrawRay(agentHead.transform.position, agentHead.transform.TransformDirection(directions[i]) * hit.distance, Color.red);
 
@@ -262,7 +284,7 @@ public class HaulerAgent : Agent
             }
             else
             {
-                Debug.DrawRay(agentHead.transform.position, agentHead.transform.TransformDirection(directions[i]) * 20f, Color.white);
+                Debug.DrawRay(agentHead.transform.position, agentHead.transform.TransformDirection(directions[i]) * raycastDistance, Color.white);
 
                 raycastsHit[i] = false;
                 obstacles[i] = null;
@@ -271,14 +293,14 @@ public class HaulerAgent : Agent
 
         // check target raycast ... we want this to be separate from others
         Vector3 downDirection = new Vector3(0, -0.3f, 1f);
-        if (Physics.Raycast(agentHead.transform.position, agentHead.transform.TransformDirection(downDirection), out RaycastHit targHit, 7f, layerMask))
+        if (Physics.Raycast(agentHead.transform.position, agentHead.transform.TransformDirection(downDirection), out RaycastHit targHit, raycastDistance / 2, layerMask))
         {
             Debug.DrawRay(agentHead.transform.position, agentHead.transform.TransformDirection(downDirection) * targHit.distance, Color.red);
             ValidateRaycastCollision(targHit, 0);
         }
         else
         {
-            Debug.DrawRay(agentHead.transform.position, agentHead.transform.TransformDirection(downDirection) * 7f, Color.white);
+            Debug.DrawRay(agentHead.transform.position, agentHead.transform.TransformDirection(downDirection) * raycastDistance / 2, Color.white);
             targetRaycast = false;
         }
         
@@ -308,13 +330,13 @@ public class HaulerAgent : Agent
         actions[1] = Input.GetAxis("Vertical");
     }
 
-    private void SubtractReward(float value) // TODO : add to agent class
+    private void SubtractReward(float value) 
     {
         AddReward(value * -1);
     }
 
     /// <summary>
-    /// The base SetReward doesn't actually "set reward", only adds.
+    /// The base SetReward doesn't work so we use this instead.
     /// </summary>
     /// <param name="value"></param>
     new private void SetReward(float value)

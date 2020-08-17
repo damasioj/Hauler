@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Unity.MLAgents;
 using UnityEngine;
@@ -13,16 +14,17 @@ public class HaulerAcademy : MonoBehaviour
     
     void Awake()
     {
-        Academy.Instance.OnEnvironmentReset += EnvironmentReset;
-    }
-
-    void Start()
-    {
         obstacleManager = gameObject.AddComponent<ObstacleManager>();
         hauler = GetComponentInChildren<Agent>() as HaulerAgent;
         targets = GetComponentsInChildren<BaseTarget>().ToList();
         goal = GetComponentInChildren<Goal>();
 
+        Academy.Instance.OnEnvironmentReset += EnvironmentReset;
+        hauler.EpisodeReset += EnvironmentReset;
+    }
+
+    void Start()
+    {
         targets.ForEach(t => t.agent = hauler);
         goal.agent = hauler;
     }
@@ -35,9 +37,14 @@ public class HaulerAcademy : MonoBehaviour
         goal.Reset(activeTarget.transform.localPosition);
     }
 
+    public void EnvironmentReset(object sender, EventArgs e)
+    {
+        EnvironmentReset();
+    }
+
     public void SetTarget()
     {
-        int index = Random.Range(0, targets.Count);
+        int index = UnityEngine.Random.Range(0, targets.Count);
 
         activeTarget = targets[index];
         activeTarget.gameObject.SetActive(true);

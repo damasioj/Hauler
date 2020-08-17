@@ -1,6 +1,6 @@
 ﻿public class BoxTarget : BaseTarget
 {
-    private void Awake()
+    private void Start()
     {
         base.Shape = TargetType.Box;
     }

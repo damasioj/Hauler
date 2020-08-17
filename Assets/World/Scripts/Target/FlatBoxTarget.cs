@@ -1,6 +1,6 @@
 ﻿public class FlatBoxTarget : BaseTarget
 {
-    private void Awake()
+    private void Start()
     {
         base.Shape = TargetType.Flatbox;
     }
