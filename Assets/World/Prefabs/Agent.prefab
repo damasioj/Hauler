@@ -505,7 +505,7 @@ Rigidbody:
   m_GameObject: {fileID: 6502164747158278507}
   serializedVersion: 2
   m_Mass: 1
-  m_Drag: 20
+  m_Drag: 10
   m_AngularDrag: 5
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -557,6 +557,7 @@ MonoBehaviour:
   stepsThreshold: 1500
   positionRange: 35
   raycastDistance: 0
+  acceleration: 0
 --- !u!114 &1160995109560047994
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -47,9 +47,9 @@ public class HaulerAcademy : MonoBehaviour
         int index = UnityEngine.Random.Range(0, targets.Count);
 
         activeTarget = targets[index];
-        activeTarget.gameObject.SetActive(true);
-        hauler.target = activeTarget;
-        
+        activeTarget.gameObject.SetActive(true);        
         targets.Except(new[] { targets[index] }).ToList().ForEach(t => t.gameObject.SetActive(false));
+
+        hauler.UpdateTarget(activeTarget);
     }
 }

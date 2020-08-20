@@ -23,11 +23,11 @@ public static class ObjectHelper
     {
         if (previousDistance == 0f)
         {
-            previousDistance = Vector3.Distance(firstObject.transform.position, secondObject.transform.position);
+            previousDistance = Vector3.Distance(firstObject.transform.localPosition, secondObject.transform.localPosition);
             return 0f;
         }
         
-        var distance = Vector3.Distance(firstObject.transform.position, secondObject.transform.position);
+        var distance = Vector3.Distance(firstObject.transform.localPosition, secondObject.transform.localPosition);
 
         if (previousDistance - distance > 0)
         {

@@ -7,11 +7,11 @@ using UnityEngine;
 public class HaulerAgent : Agent
 {
     // predef
-    [HideInInspector] public BaseTarget target;
     public Goal goal;
     public int stepsThreshold;
     public float positionRange;
     public float raycastDistance;
+    public float acceleration;
 
     // agent
     public event EventHandler EpisodeReset;
@@ -21,12 +21,14 @@ public class HaulerAgent : Agent
     int internalStepCount;
     bool targetRaycast;
 
-    // target
+    // target    
+    BaseTarget target;
     float lastTargetDistance;
     Rigidbody targetBody;
     Vector3 targetDimensions;
 
     // env
+    object dataLock = new object(); // used to ensure data is not sent to model while resetting environment
     List<bool> raycastsHit;
     List<GameObject> obstacles;
     List<Collider> checkPoints;
@@ -51,8 +53,6 @@ public class HaulerAgent : Agent
     {
         rBody = GetComponent<Rigidbody>();
         agentHead = GetComponentInChildren<SphereCollider>().gameObject;
-
-        //OnEpisodeBegin();
     }
 
     void FixedUpdate()
@@ -77,6 +77,12 @@ public class HaulerAgent : Agent
             Debug.Log($"Reward: {GetCumulativeReward()}");
             Debug.Log($"No point earned in last {stepsThreshold} steps. Restarting ...");
             EndEpisode();
+        }
+
+        // multiply gravity
+        if (rBody.velocity.y < 0)
+        {
+            rBody.AddForce(new Vector3(0, rBody.velocity.y * 0.3f, 0), ForceMode.VelocityChange);
         }
     }
 
@@ -110,7 +116,7 @@ public class HaulerAgent : Agent
     {
         raycastsHit = new List<bool>();
         obstacles = new List<GameObject>();
-        
+
         for (int i = 0; i < size; i++)
         {
             raycastsHit.Add(false);
@@ -124,7 +130,7 @@ public class HaulerAgent : Agent
         {
             if (!checkPoints.Contains(other))
             {
-                checkPoints.Add(other);                
+                checkPoints.Add(other);
                 internalStepCount = StepCount;
                 AddReward(0.1f);
                 Debug.Log("Reached box!");
@@ -135,43 +141,48 @@ public class HaulerAgent : Agent
 
     public override void OnEpisodeBegin()
     {
-        Reset();
-        OnEpisodeReset();
-        UpdateTargetData();
+        lock (dataLock)
+        {
+            Reset();
+            OnEpisodeReset();
+        }
     }
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        // target data
-        sensor.AddObservation(target.transform.position); //3
-        sensor.AddObservation(targetBody.velocity); //3
-        sensor.AddObservation(targetDimensions); //3
-        sensor.AddObservation(target.transform.rotation); //4
-        sensor.AddObservation(targetBody.mass); //1
-        sensor.AddObservation(targetBody.drag); //1
-
-        // goal data
-        sensor.AddObservation(goal.transform.position); //3
-
-        // Agent data
-        sensor.AddObservation(transform.position); //3
-        sensor.AddObservation(rBody.velocity); //3
-        sensor.AddObservation(transform.rotation); // 4
-        sensor.AddObservation(targetRaycast); //1
-
-        // obstacle info
-        raycastsHit.ForEach(x => sensor.AddObservation(x)); // n * 1
-        for (int i = 0; i < obstacles.Count; i++)
+        lock (dataLock)
         {
-            if (obstacles[i] == null)
-            {
-                sensor.AddObservation(Vector3.zero);
-                sensor.AddObservation(Vector3.zero);
-                continue;
-            }
+            // target data
+            sensor.AddObservation(target.transform.position); //3
+            sensor.AddObservation(target.transform.rotation); //4
+            sensor.AddObservation(targetBody.velocity); //3
+            sensor.AddObservation(targetDimensions); //3        
+            sensor.AddObservation(targetBody.mass); //1
+            sensor.AddObservation(targetBody.drag); //1
 
-            sensor.AddObservation(ObjectHelper.GetDimensions(obstacles[i])); // n * 3
-            sensor.AddObservation(obstacles[i].transform.position); // n * 3
+            // goal data
+            sensor.AddObservation(goal.transform.position); //3
+
+            // Agent data
+            sensor.AddObservation(transform.position); //3
+            sensor.AddObservation(rBody.velocity); //3
+            sensor.AddObservation(transform.rotation); // 4
+            sensor.AddObservation(targetRaycast); //1
+
+            // obstacle info
+            raycastsHit.ForEach(x => sensor.AddObservation(x)); // n * 1
+            for (int i = 0; i < obstacles.Count; i++)
+            {
+                if (obstacles[i] == null)
+                {
+                    sensor.AddObservation(Vector3.zero);
+                    sensor.AddObservation(Vector3.zero);
+                    continue;
+                }
+
+                sensor.AddObservation(ObjectHelper.GetDimensions(obstacles[i])); // n * 3
+                sensor.AddObservation(obstacles[i].transform.position); // n * 3
+            }
         }
     }
 
@@ -186,39 +197,25 @@ public class HaulerAgent : Agent
         controlSignal.x = vectorAction[0];
         controlSignal.z = vectorAction[1];
 
-        // agent is idle
-        if (controlSignal.x == 0 && controlSignal.z == 0)
-        {
-            rBody.angularVelocity = Vector3.zero;
-            rBody.velocity = Vector3.zero;
-            return;
-        }
-
         // agent is moving
-        if (rBody.velocity.x > 30)
-        {
-            controlSignal.x = 0;
-        }
-        if (rBody.velocity.z > 30)
-        {
-            controlSignal.z = 0;
-        }
-
-        rBody.AddForce(new Vector3(controlSignal.x * 750, 0, controlSignal.z * 750));
+        var scale = gameObject.transform.localScale.x;
+        rBody.AddForce(new Vector3(controlSignal.x * acceleration * scale, 0, controlSignal.z * acceleration * scale));
 
         SetDirection();
     }
 
     private void SetDirection()
     {
-        if (transform.position != previousPosition)
+        if (transform.position.x != previousPosition.x &&
+            transform.position.z != previousPosition.z)
         {
             var direction = (transform.position - previousPosition).normalized;
             direction.y = 0;
 
             transform.rotation = Quaternion.LookRotation(direction);
-            previousPosition = transform.position;
         }
+
+        previousPosition = transform.position;
     }
 
     /// <summary>
@@ -260,7 +257,7 @@ public class HaulerAgent : Agent
             checkPoints.Add(checkpoint);
             internalStepCount = StepCount;
             AddReward(0.1f);
-            Debug.Log("Reached checkpoint!");            
+            Debug.Log("Reached checkpoint!");
             Debug.Log($"Reward: {GetCumulativeReward()}");
         }
     }
@@ -303,7 +300,7 @@ public class HaulerAgent : Agent
             Debug.DrawRay(agentHead.transform.position, agentHead.transform.TransformDirection(downDirection) * raycastDistance / 2, Color.white);
             targetRaycast = false;
         }
-        
+
     }
 
     private void ValidateRaycastCollision(RaycastHit hit, int index)
@@ -324,13 +321,19 @@ public class HaulerAgent : Agent
         }
     }
 
+    public void UpdateTarget(BaseTarget newTarget)
+    {
+        target = newTarget;
+        UpdateTargetData();
+    }
+
     public override void Heuristic(float[] actions)
     {
         actions[0] = Input.GetAxis("Horizontal");
         actions[1] = Input.GetAxis("Vertical");
     }
 
-    private void SubtractReward(float value) 
+    private void SubtractReward(float value)
     {
         AddReward(value * -1);
     }
