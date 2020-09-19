@@ -73,7 +73,7 @@ public class HaulerAgent : Agent
         if (StepCount - internalStepCount > stepsThreshold && !isDoneCalled)
         {
             isDoneCalled = true;
-            SubtractReward(0.2f);
+            //SubtractReward(0.2f);
             Debug.Log($"Reward: {GetCumulativeReward()}");
             Debug.Log($"No point earned in last {stepsThreshold} steps. Restarting ...");
             EndEpisode();
@@ -101,7 +101,7 @@ public class HaulerAgent : Agent
         rBody.velocity = Vector3.zero;
 
         lastTargetDistance = 0f;
-        internalStepCount = StepCount;
+        internalStepCount = 0;
         isDoneCalled = false;
         checkPoints.Clear();
     }

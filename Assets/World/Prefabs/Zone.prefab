@@ -19,7 +19,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6414766262643279347
 Transform:
   m_ObjectHideFlags: 0
@@ -222,7 +222,7 @@ MonoBehaviour:
   maxX: 35
   minX: -35
   maxZ: 35
-  minZ: 4
+  minZ: -35
   minScale: 1
   maxScale: 5
 --- !u!1 &1051808212832143157
@@ -335,7 +335,7 @@ MonoBehaviour:
   maxX: 35
   minX: -35
   maxZ: 35
-  minZ: 4
+  minZ: -35
   minScale: 0.5
   maxScale: 3
 --- !u!1 &1066406126193430518
@@ -648,7 +648,7 @@ MonoBehaviour:
   maxX: 35
   minX: -35
   maxZ: 35
-  minZ: 4
+  minZ: -35
   minScale: 0.5
   maxScale: 3
 --- !u!1 &3210654409838011916
@@ -761,7 +761,7 @@ MonoBehaviour:
   maxX: 35
   minX: -35
   maxZ: 35
-  minZ: 4
+  minZ: -35
   minScale: 2
   maxScale: 6
 --- !u!1 &3850503844031296660
@@ -783,7 +783,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4808206672636674250
 Transform:
   m_ObjectHideFlags: 0
@@ -1079,7 +1079,7 @@ MonoBehaviour:
   maxX: 35
   minX: -35
   maxZ: 35
-  minZ: 4
+  minZ: -35
   minScale: 1
   maxScale: 5
 --- !u!1 &6233378831535356082
@@ -1398,7 +1398,7 @@ MonoBehaviour:
   maxX: 35
   minX: -35
   maxZ: 35
-  minZ: 4
+  minZ: -35
   minScale: 1
   maxScale: 5
 --- !u!1 &7890390684698716314
@@ -1428,7 +1428,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7890390684698716314}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0, z: 0}
   m_LocalScale: {x: 75, y: 1, z: 75}
   m_Children: []
   m_Father: {fileID: 6228081321494564680}
