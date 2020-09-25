@@ -525,9 +525,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 50
+    VectorObservationSize: 52
     NumStackedVectorObservations: 1
-    VectorActionSize: 02000000
+    VectorActionSize: 0100000001000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
   m_Model: {fileID: 0}
@@ -552,7 +552,6 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
-  target: {fileID: 0}
   goal: {fileID: 0}
   stepsThreshold: 1500
   positionRange: 35

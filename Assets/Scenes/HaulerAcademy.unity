@@ -473,7 +473,12 @@ PrefabInstance:
     - target: {fileID: 3126981665548178737, guid: 8cd4b13c28b22f84480cbfaeb5baf0d8,
         type: 3}
       propertyPath: DemonstrationName
-      value: Hauler5
+      value: Hauler6
+      objectReference: {fileID: 0}
+    - target: {fileID: 3126981665548178737, guid: 8cd4b13c28b22f84480cbfaeb5baf0d8,
+        type: 3}
+      propertyPath: DemonstrationDirectory
+      value: Assets\Demonstrations
       objectReference: {fileID: 0}
     - target: {fileID: 4631985492738929758, guid: 8cd4b13c28b22f84480cbfaeb5baf0d8,
         type: 3}
@@ -559,6 +564,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5375780099682051265, guid: 8cd4b13c28b22f84480cbfaeb5baf0d8,
+        type: 3}
+      propertyPath: m_BrainParameters.VectorActionSize.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5375780099682051265, guid: 8cd4b13c28b22f84480cbfaeb5baf0d8,
+        type: 3}
+      propertyPath: m_BrainParameters.VectorActionSpaceType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5375780099682051265, guid: 8cd4b13c28b22f84480cbfaeb5baf0d8,
+        type: 3}
+      propertyPath: m_BrainParameters.VectorActionSize.Array.data[0]
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6269178136928715631, guid: 8cd4b13c28b22f84480cbfaeb5baf0d8,
         type: 3}

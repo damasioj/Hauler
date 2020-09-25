@@ -19,7 +19,6 @@ public class HaulerAgent : Agent
     GameObject agentHead;
     Rigidbody rBody;
     int internalStepCount;
-    bool targetRaycast;
 
     // target    
     BaseTarget target;
@@ -29,23 +28,13 @@ public class HaulerAgent : Agent
 
     // env
     object dataLock = new object(); // used to ensure data is not sent to model while resetting environment
-    List<bool> raycastsHit;
-    List<GameObject> obstacles;
+    List<RaycastSensor> sensors;
     List<Collider> checkPoints;
     bool isDoneCalled;
 
-    Vector3[] directions = new Vector3[3] // add to raycast helper
-    {
-        Vector3.forward,
-        //Vector3.right,
-        //Vector3.left,
-        new Vector3(0.5f, 0, 0.5f),
-        new Vector3(-0.5f, 0, 0.5f)
-    };
-
     private void Awake()
     {
-        InitializeRaycasts(3);
+        InitializeRaycasts();
         checkPoints = new List<Collider>();
     }
 
@@ -112,15 +101,32 @@ public class HaulerAgent : Agent
         targetBody = target.GetComponent<Rigidbody>();
     }
 
-    private void InitializeRaycasts(int size)
+    private void InitializeRaycasts()
     {
-        raycastsHit = new List<bool>();
-        obstacles = new List<GameObject>();
-
-        for (int i = 0; i < size; i++)
+        sensors = new List<RaycastSensor>();
+        
+        Vector3[] directionsObstacles = new Vector3[3] 
         {
-            raycastsHit.Add(false);
-            obstacles.Add(null);
+            Vector3.forward,
+            new Vector3(0.5f, 0, 0.5f), // forward-right
+            new Vector3(-0.5f, 0, 0.5f), // forward-left
+        };
+
+        Vector3[] directionsTargets = new Vector3[3]
+        {
+            new Vector3(0, -0.3f, 1f), // down
+            new Vector3(0.5f, -0.3f, 1f), // down-right
+            new Vector3(-0.5f, -0.3f, 1f) // down-left
+        };
+
+        foreach(Vector3 direction in directionsObstacles)
+        {
+            sensors.Add(new RaycastSensor(RaycastType.Obstacle, direction, raycastDistance));
+        }
+
+        foreach (Vector3 direction in directionsTargets)
+        {
+            sensors.Add(new RaycastSensor(RaycastType.Target, direction, raycastDistance / 3));
         }
     }
 
@@ -167,21 +173,25 @@ public class HaulerAgent : Agent
             sensor.AddObservation(transform.position); //3
             sensor.AddObservation(rBody.velocity); //3
             sensor.AddObservation(transform.rotation); // 4
-            sensor.AddObservation(targetRaycast); //1
 
-            // obstacle info
-            raycastsHit.ForEach(x => sensor.AddObservation(x)); // n * 1
-            for (int i = 0; i < obstacles.Count; i++)
+            // raycast info
+            foreach(var rSensor in sensors)
             {
-                if (obstacles[i] == null)
-                {
-                    sensor.AddObservation(Vector3.zero);
-                    sensor.AddObservation(Vector3.zero);
-                    continue;
-                }
+                sensor.AddObservation(rSensor.HitObject);
 
-                sensor.AddObservation(ObjectHelper.GetDimensions(obstacles[i])); // n * 3
-                sensor.AddObservation(obstacles[i].transform.position); // n * 3
+                if (rSensor.Type == RaycastType.Obstacle)
+                {
+                    if (rSensor.HitObject) 
+                    {
+                        sensor.AddObservation(ObjectHelper.GetDimensions(rSensor.Obstacle));
+                        sensor.AddObservation(rSensor.Obstacle.transform.position);
+                    }
+                    else
+                    {
+                        sensor.AddObservation(Vector3.zero);
+                        sensor.AddObservation(Vector3.zero);
+                    }
+                }
             }
         }
     }
@@ -264,60 +274,42 @@ public class HaulerAgent : Agent
 
     private void ExecuteRaycasts() //refactor
     {
-        // Bit shift the index of the layer (8) to get a bit mask
         int layerMask = 1 << 8;
-
-        // This would cast rays only against colliders in layer 8.
-        // But instead we want to collide against everything except layer 8. The ~ operator does this, it inverts a bitmask.
         layerMask = ~layerMask;
 
-        for (int i = 0; i < directions.Length; i++)
+        foreach(var sensor in sensors)
         {
-            if (Physics.Raycast(agentHead.transform.position, agentHead.transform.TransformDirection(directions[i]), out RaycastHit hit, raycastDistance, layerMask))
+            if (Physics.Raycast(agentHead.transform.position, agentHead.transform.TransformDirection(sensor.Direction), out RaycastHit hit, sensor.Distance, layerMask))
             {
-                Debug.DrawRay(agentHead.transform.position, agentHead.transform.TransformDirection(directions[i]) * hit.distance, Color.red);
+                Debug.DrawRay(agentHead.transform.position, agentHead.transform.TransformDirection(sensor.Direction) * hit.distance, Color.red);
 
-                ValidateRaycastCollision(hit, i);
+                ValidateRaycastCollision(sensor, hit);
             }
             else
             {
-                Debug.DrawRay(agentHead.transform.position, agentHead.transform.TransformDirection(directions[i]) * raycastDistance, Color.white);
+                Debug.DrawRay(agentHead.transform.position, agentHead.transform.TransformDirection(sensor.Direction) * sensor.Distance, Color.white);
 
-                raycastsHit[i] = false;
-                obstacles[i] = null;
-            }
+                sensor.HitObject = false;
+                sensor.Obstacle = null;
+            }      
         }
-
-        // check target raycast ... we want this to be separate from others
-        Vector3 downDirection = new Vector3(0, -0.3f, 1f);
-        if (Physics.Raycast(agentHead.transform.position, agentHead.transform.TransformDirection(downDirection), out RaycastHit targHit, raycastDistance / 2, layerMask))
-        {
-            Debug.DrawRay(agentHead.transform.position, agentHead.transform.TransformDirection(downDirection) * targHit.distance, Color.red);
-            ValidateRaycastCollision(targHit, 0);
-        }
-        else
-        {
-            Debug.DrawRay(agentHead.transform.position, agentHead.transform.TransformDirection(downDirection) * raycastDistance / 2, Color.white);
-            targetRaycast = false;
-        }
-
     }
 
-    private void ValidateRaycastCollision(RaycastHit hit, int index)
+    private void ValidateRaycastCollision(RaycastSensor sensor, RaycastHit hit)
     {
-        if (hit.collider.CompareTag("obstacle"))
+        if (hit.collider.CompareTag("obstacle") && sensor.Type == RaycastType.Obstacle)
         {
-            raycastsHit[index] = true;
-            obstacles[index] = hit.collider.gameObject;
+            sensor.HitObject = true;
+            sensor.Obstacle = hit.collider.gameObject;
         }
-        else if (hit.collider.CompareTag("target"))
+        else if (hit.collider.CompareTag("target") && sensor.Type == RaycastType.Target)
         {
-            targetRaycast = true;
+            sensor.HitObject = true;
         }
         else
         {
-            raycastsHit[index] = false;
-            obstacles[index] = null;
+            sensor.HitObject = false;
+            sensor.Obstacle = null;
         }
     }
 
