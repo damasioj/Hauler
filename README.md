@@ -14,7 +14,7 @@ The following are the goals of this project:
 
 - [x] Move the object to the target location
 - [x] Move objects with differing mass and dimensions (1 object / trial)
-- ~~[ ] Move multiple objects to the goal~~
+- [ ] ~~Move multiple objects to the goal~~
 
 # Requirements
 
