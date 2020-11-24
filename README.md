@@ -1,8 +1,8 @@
-# Master's Thesis: Hauler Simulation
+# Master's Thesis: Hauler Simulation [Discontinued]
 
-This project is being developed for a Master's thesis that studies the implementation of behaviours in subjects using Machine Learning. This scenario attempts to simulate an agent (hauler) that must physically move objects within the scene.
+This project has been discontinued and its results will not be presented in the Master's thesis.
 
-The agent uses ray casting to perceive its environment and must avoid obstacles. For every trial, the obstacles are repositioned. The objective is for the agent to "push" the target object to the goal without hitting boundaries.
+This scenario attempts to simulate an agent (hauler) that must physically move objects within the scene. The agent uses ray casting to perceive its environment and must avoid obstacles. For every trial, the obstacles are repositioned. The objective is for the agent to "push" the target object to the goal without hitting boundaries.
 
 # Unity ML-Agents SDK
 
@@ -13,8 +13,8 @@ The project uses Unity ML-Agents to train agents.
 The following are the goals of this project:
 
 - [x] Move the object to the target location
-- [ ] Move objects with differing mass and dimensions (1 object / trial)
-- [ ] Move multiple objects to the goal
+- [x] Move objects with differing mass and dimensions (1 object / trial)
+- ~~[ ] Move multiple objects to the goal~~
 
 # Requirements
 
